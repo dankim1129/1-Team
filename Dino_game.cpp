@@ -1,12 +1,12 @@
-//[C/C++ game] very simple google dinosaur. (by. BlockDMask)
-//2019.12.03 (v2.0)점수 추가, 충돌처리 추가.
-#include<stdio.h>
+nclude<stdio.h>
 #include<windows.h>
 #include<conio.h>
 #include<time.h>
 #define DINO_BOTTOM_Y 12
 #define TREE_BOTTOM_Y 20
 #define TREE_BOTTOM_X 45
+#define COIN_BOTTOM_Y 6
+#define COIN_BOTTOM_X 45
 
 //콘솔 창의 크기와 제목을 지정하는 함수
 void SetConsoleView()
@@ -37,6 +37,7 @@ int GetKeyDown()
 //공룡을 그리는 함수
 void DrawDino(int dinoY)
 {
+
 	GotoXY(0, dinoY);
 	static bool legFlag = true;
 	printf("        $$$$$$$ \n");
@@ -62,7 +63,11 @@ void DrawDino(int dinoY)
 		printf("          $$    ");
 		legFlag = true;
 	}
+
+
 }
+
+
 
 //나무를 그리는 함수
 void DrawTree(int treeX)
@@ -78,6 +83,16 @@ void DrawTree(int treeX)
 	GotoXY(treeX, TREE_BOTTOM_Y + 4);
 	printf(" $$ ");
 }
+// 코인을 그리는 함수
+
+void DrawCoin(int coinX)
+{
+	GotoXY(coinX, COIN_BOTTOM_Y);
+	printf("$$$$");
+	GotoXY(coinX, COIN_BOTTOM_Y + 1);
+	printf("$$$$");
+
+}
 
 //(v2.0) 충돌 했을때 게임오버 그려줌
 void DrawGameOver(const int score)
@@ -89,7 +104,7 @@ void DrawGameOver(const int score)
 	printf("===========================");
 	GotoXY(x, y + 1);
 	printf("======G A M E O V E R======");
-	GotoXY(x, y + 2);	
+	GotoXY(x, y + 2);
 	printf("===========================");
 	GotoXY(x, y + 5);
 	printf("SCORE : %d", score);
@@ -106,8 +121,19 @@ bool isCollision(const int treeX, const int dinoY)
 	GotoXY(0, 0);
 	printf("treeX : %d, dinoY : %d", treeX, dinoY); //이런식으로 적절한 X, Y를 찾습니다.
 	if (treeX <= 8 && treeX >= 4 &&
-		dinoY > 8)
+			dinoY > 8)
 	{
+		return true;
+	}
+	return false;
+}
+
+bool getCoin(const int coinX, const int dinoY)
+{
+	//코인의 X가 공룡의 몸체쪽에 있을때,
+	//공룡의 높이가 충분하지 않다면 코인 획득 X
+	GotoXY(0, 0);
+	if (coinX <= 6 && coinX >= 5 &&	dinoY < 8) {
 		return true;
 	}
 	return false;
@@ -121,12 +147,14 @@ int main()
 	{
 		//게임 시작시 초기화
 		bool isJumping = false;
+		bool isCrawling = false;
 		bool isBottom = true;
 		const int gravity = 3;
-		
+
 		int dinoY = DINO_BOTTOM_Y;
 		int treeX = TREE_BOTTOM_X;
-		
+		int coinX = COIN_BOTTOM_X;
+
 		int score = 0;
 		clock_t start, curr;	//점수 변수 초기화
 		start = clock();		//시작시간 초기화
@@ -134,14 +162,22 @@ int main()
 		while (true)	//한 판에 대한 루프
 		{
 			//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
-			if(isCollision(treeX, dinoY))
+			if (isCollision(treeX, dinoY))
 				break;
 
+			if (getCoin(coinX, dinoY)) {
+				score += 10;				
+			}
 			//z키가 눌렸고, 바닥이 아닐때 점프
 			if (GetKeyDown() == 'z' && isBottom)
 			{
 				isJumping = true;
 				isBottom = false;
+			}
+
+			if (GetKeyDown() == 'x')
+			{
+				isCrawling = true;
 			}
 
 			//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
@@ -169,6 +205,12 @@ int main()
 				treeX = TREE_BOTTOM_X;
 			}
 
+			coinX -= 2;
+			if (coinX <= 0)
+			{
+				coinX = COIN_BOTTOM_X;
+			}
+
 			//점프의 맨위를 찍으면 점프가 끝난 상황.
 			if (dinoY <= 3)
 			{
@@ -177,11 +219,12 @@ int main()
 
 			DrawDino(dinoY);		//draw dino
 			DrawTree(treeX);		//draw Tree
+			DrawCoin(coinX);		//draw Coin
 
 			//(v2.0)
 			curr = clock();			//현재시간 받아오기
 			if (((curr - start) / CLOCKS_PER_SEC) >= 1)	// 1초가 넘었을떄
-			{
+			{				
 				score++;	//스코어 UP
 				start = clock();	//시작시간 초기화
 			}
