@@ -132,7 +132,7 @@ bool isCollision(const int treeX, const int dinoY)
 	GotoXY(0, 0);
 	printf("treeX : %d, dinoY : %d", treeX, dinoY); //이런식으로 적절한 X, Y를 찾습니다.
 	if (treeX <= 8 && treeX >= 4 &&
-		dinoY > 8)
+			dinoY > 8)
 	{
 		return true;
 	}
@@ -160,6 +160,9 @@ int main()
 	{
 		//게임 시작시 초기화
 		bool isJumping = false;
+		bool goingup = false;
+		bool goingdown = false;
+		bool isdoubleJumping = false;
 		bool isBottom = true;
 		const int gravity = 3;
 
@@ -169,7 +172,7 @@ int main()
 		int coin2X[COIN_CNT];
 
 		int score = 0, score2 = 0;	//score : time, score2 : 코인으로 얻은 점수
-		int life = 99999;		//시작 목숨 갯수 초기화
+		int life = 10;		//시작 목숨 갯수 초기화
 		clock_t start, curr;	//점수 변수 초기화
 		start = clock();		//시작시간 초기화
 		int tmp1 = 0;
@@ -222,19 +225,32 @@ int main()
 
 
 
-			//z키가 눌렸고, 바닥이 아닐때 점프
+			//z키가 눌렸고, 바닥일 때 점프
 			if (GetKeyDown() == 'z' && isBottom)
 			{
 				isJumping = true;
+				goingup = true;
+				goingdown = false;
 				isBottom = false;
 			}
 
+			//z키가 눌렸고, 점프 중일 때 점프
+			if (GetKeyDown() == 'z' && isJumping == true)
+			{
+				goingup = true;
+				goingdown = false;
+				isdoubleJumping = true;
+				isJumping = false;
+			}
+
+
 			//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
-			if (isJumping)
+
+			if (goingup)
 			{
 				dinoY -= gravity;
 			}
-			else
+			else if(goingdown)
 			{
 				dinoY += gravity;
 			}
@@ -243,6 +259,7 @@ int main()
 			if (dinoY >= DINO_BOTTOM_Y)
 			{
 				dinoY = DINO_BOTTOM_Y;
+				goingdown = false;
 				isBottom = true;
 			}
 
@@ -267,10 +284,18 @@ int main()
 						coin2X[i] = TREE_BOTTOM_X + 1;
 				}
 
-			//점프의 맨위를 찍으면 점프가 끝난 상황.
-			if (dinoY <= 3)
+			//점프의 한번으로 점프가 끝난 상황.
+			if (dinoY <= 3 && isdoubleJumping == true)
 			{
-				isJumping = false;
+				goingup = false;
+				goingdown = true;
+			}
+
+			//점프의 두번으로 점프가 끝난 상황.
+			if (dinoY <= 8 && isJumping == true)
+			{
+				goingup = false;
+				goingdown = true;
 			}
 
 			DrawDino(dinoY);		//draw dino
@@ -292,9 +317,8 @@ int main()
 
 			//(v2.0) 점수출력을 1초마다 해주는것이 아니라 항상 출력해주면서, 1초가 지났을때 ++ 해줍니다.
 			GotoXY(22, 0);	//커서를 가운데 위쪽으로 옮긴다. 콘솔창이 cols=100이니까 2*x이므로 22정도 넣어줌
-			printf("Score : %d\t", score);	//점수 출력해줌.
+			printf("Score : %d\t", score + score2);	//점수 출력해줌.
 			printf("Life : %d\t", life);
-			printf("Score2 : %d", score2);
 
 		}
 
