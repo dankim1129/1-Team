@@ -5,6 +5,7 @@
 #include "util.h"
 #include "game.h"
 
+int max_score;
 
 //공룡을 그리는 함수
 void DrawDino(int dinoY)
@@ -92,6 +93,9 @@ void DrawGameOver(const int score)
 	printf("===========================");
 	GotoXY(x, y + 5);
 	printf("SCORE : %d", score);
+
+	if (score > max_score)
+		max_score = score;
  
 	printf("\n\n\n\n\n\n\n\n\n");
 	system("pause");
@@ -285,8 +289,24 @@ void GameStart()
 	}
 
 	//(v2.0) 게임 오버 메뉴
-	DrawGameOver(score);
+	DrawGameOver(score + score2);
 
+}
+
+void ShowScore() {
+	system("cls");
+	int x = 18;
+	int y = 8;
+	GotoXY(x, y);
+	printf("===========================");
+	GotoXY(x, y + 1);
+	printf("최고점수: %d\n", max_score);
+	GotoXY(x, y + 2);
+	printf("===========================");
+	GotoXY(x, y + 5);
+	printf("\n\n\n\n\n\n\n\n\n");
+	system("pause");
+	
 }
 
 //pull request test

@@ -8,6 +8,8 @@ int main() {
 		int menu_num = MenuDraw();
 		if (menu_num == 0)  // 게임시작 버튼이 눌렸으면
 			GameStart();
+		if (menu_num == 1)
+			ShowScore();
 		if (menu_num == 2)
 			break;
 	}
