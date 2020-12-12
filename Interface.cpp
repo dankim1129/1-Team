@@ -3,15 +3,8 @@
 
 using namespace std;
 
-
 static int default_x = 22;
 static int default_y = 15;
-
-class highscore {
-	string name;
-	int score;
-};
-
 
 void StartDraw() {
 
@@ -32,7 +25,7 @@ int MenuDraw() {
 	GotoXY(cursor_x - 2, cursor_y);
 	cout << ">   게 임 시 작";
 	GotoXY(cursor_x, cursor_y + 1);
-	cout << "최 고 점 수";
+	cout << "현 재 순 위";
 	GotoXY(cursor_x, cursor_y + 2);
 	cout << "종  료";
 

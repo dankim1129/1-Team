@@ -1,13 +1,16 @@
-//[C/C++ game] very simple google dinosaur. (by. BlockDMask)
-//2019.12.03 (v2.0)Á¡¼ö Ãß°¡, Ãæµ¹Ã³¸® Ãß°¡.
+ï»¿//[C/C++ game] very simple google dinosaur. (by. BlockDMask)
+//2019.12.03 (v2.0)ì ìˆ˜ ì¶”ê°€, ì¶©ëŒì²˜ë¦¬ ì¶”ê°€.
+
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <time.h>
 #include "util.h"
 #include "game.h"
+#include "score.h"
 
-int max_score;
+extern highscore h;
 
-//°ø·æÀ» ±×¸®´Â ÇÔ¼ö
+//ê³µë£¡ì„ ê·¸ë¦¬ëŠ” í•¨ìˆ˜
 void DrawDino(int dinoY)
 {
 	GotoXY(0, dinoY);
@@ -45,7 +48,7 @@ void DrawCoin(int coinX)
 	printf("++");
 }
 
-//Á¡¼ö °¨¼Ò ÄÚÀÎÀ» ±×¸®´Â ÇÔ¼ö
+//ì ìˆ˜ ê°ì†Œ ì½”ì¸ì„ ê·¸ë¦¬ëŠ” í•¨ìˆ˜
 
 void DrawCoin2(int coin2X)
 {
@@ -55,7 +58,7 @@ void DrawCoin2(int coin2X)
 	printf("--");
 }
 
-//³ª¹«¸¦ ±×¸®´Â ÇÔ¼ö
+//ë‚˜ë¬´ë¥¼ ê·¸ë¦¬ëŠ” í•¨ìˆ˜
 void DrawTree(int treeX)
 {
 	GotoXY(treeX, TREE_BOTTOM_Y);
@@ -70,7 +73,6 @@ void DrawTree(int treeX)
 	printf(" $$ ");
 }
 
-//¹Ú½º¸¦ ±×¸®´Â ÇÔ¼ö
 void DrawBox(int boxX)
 {
 	GotoXY(boxX, BOX_BOTTOM_Y);
@@ -79,9 +81,12 @@ void DrawBox(int boxX)
 	printf("$$");
 }
 
-//(v2.0) Ãæµ¹ ÇßÀ»¶§ °ÔÀÓ¿À¹ö ±×·ÁÁÜ
+
+//(v2.0) ì¶©ëŒ í–ˆì„ë•Œ ê²Œì„ì˜¤ë²„ ê·¸ë ¤ì¤Œ
 void DrawGameOver(const int score)
 {
+	
+	
 	system("cls");
 	int x = 18;
 	int y = 8;
@@ -92,23 +97,27 @@ void DrawGameOver(const int score)
 	GotoXY(x, y + 2);
 	printf("===========================");
 	GotoXY(x, y + 5);
-	printf("SCORE : %d", score);
 
-	if (score > max_score)
-		max_score = score;
- 
+	// ê²Œì„ ì¢…ë£Œì‹œ ì´ë¦„ì„ ì…ë ¥í•˜ì—¬ ê¸°ë¡ ë‚¨ê¸°ê¸°
+	GotoXY(18, 15);
+	char* temp = new char;
+	printf("ì´ë¦„ì„ ì…ë ¥í•˜ì„¸ìš” : ");
+	scanf("%s", temp);
+	h = highscore(temp, score);
+
+
 	printf("\n\n\n\n\n\n\n\n\n");
 	system("pause");
 }
 
-//(v2.0) Ãæµ¹ÇßÀ¸¸é true, ¾Æ´Ï¸é false
+//(v2.0) ì¶©ëŒí–ˆìœ¼ë©´ true, ì•„ë‹ˆë©´ false
 bool isCollision(const int treeX, const int boxX, const int dinoY)
 {
-	//Æ®¸®ÀÇ X°¡ °ø·æÀÇ ¸öÃ¼ÂÊ¿¡ ÀÖÀ»¶§,
-	//°ø·æÀÇ ³ôÀÌ°¡ ÃæºĞÇÏÁö ¾Ê´Ù¸é Ãæµ¹·Î Ã³¸®
+	//íŠ¸ë¦¬ì˜ Xê°€ ê³µë£¡ì˜ ëª¸ì²´ìª½ì— ìˆì„ë•Œ,
+	//ê³µë£¡ì˜ ë†’ì´ê°€ ì¶©ë¶„í•˜ì§€ ì•Šë‹¤ë©´ ì¶©ëŒë¡œ ì²˜ë¦¬
 	GotoXY(0, 0);
-	printf("treeX : %d, boxX : %d, dinoY : %d", treeX, boxX, dinoY); //ÀÌ·±½ÄÀ¸·Î ÀûÀıÇÑ X, Y¸¦ Ã£½À´Ï´Ù.
-	if (treeX <= 8 && treeX >= 4 &&	dinoY > 8)
+	printf("treeX : %d, boxX : %d, dinoY : %d", treeX, boxX, dinoY); //ì´ëŸ°ì‹ìœ¼ë¡œ ì ì ˆí•œ X, Yë¥¼ ì°¾ìŠµë‹ˆë‹¤.
+	if (treeX <= 8 && treeX >= 4 && dinoY > 8)
 	{
 		return true;
 	}
@@ -135,9 +144,10 @@ bool isCoin2(const int coin2X, const int dinoY)
 }
 
 
+
 void GameStart()
 {
-	//°ÔÀÓ ½ÃÀÛ½Ã ÃÊ±âÈ­
+	//ê²Œì„ ì‹œì‘ì‹œ ì´ˆê¸°í™”
 	bool isJumping = false;
 	bool isBottom = true;
 	const int gravity = 3;
@@ -148,24 +158,24 @@ void GameStart()
 	int coinX = TREE_BOTTOM_X + 1;
 	int coin2X[COIN_CNT];
 
-	int score = 0, score2 = 0;	//score : time, score2 : ÄÚÀÎÀ¸·Î ¾òÀº Á¡¼ö
-	int life = 10;		//½ÃÀÛ ¸ñ¼û °¹¼ö ÃÊ±âÈ­
-	clock_t start, curr;	//Á¡¼ö º¯¼ö ÃÊ±âÈ­
-	start = clock();		//½ÃÀÛ½Ã°£ ÃÊ±âÈ­
+	int score = 0, score2 = 0;	//score : time, score2 : ì½”ì¸ìœ¼ë¡œ ì–»ì€ ì ìˆ˜
+	int life = 10;		//ì‹œì‘ ëª©ìˆ¨ ê°¯ìˆ˜ ì´ˆê¸°í™”
+	clock_t start, curr;	//ì ìˆ˜ ë³€ìˆ˜ ì´ˆê¸°í™”
+	start = clock();		//ì‹œì‘ì‹œê°„ ì´ˆê¸°í™”
 	int tmp1 = 0;
 	bool check2 = false;
-	bool coinCheck[COIN_CNT];				//ÄÚÀÎ µîÀå ½Ã°£´ë Á¶Àı 
+	bool coinCheck[COIN_CNT];				//ì½”ì¸ ë“±ì¥ ì‹œê°„ëŒ€ ì¡°ì ˆ 
 	for (int i = 0; i < COIN_CNT; i++)
 		coinCheck[i] = false;
 
 	for (int i = 0; i < COIN_CNT; i++)
 		coin2X[i] = TREE_BOTTOM_X + 1;
 
-	int cnt = 0;							//ÄÚÀÎ µîÀå ½Ã°£ ÃøÁ¤¿ë
+	int cnt = 0;							//ì½”ì¸ ë“±ì¥ ì‹œê°„ ì¸¡ì •ìš©
 
-	while (true)	//ÇÑ ÆÇ¿¡ ´ëÇÑ ·çÇÁ
+	while (true)	//í•œ íŒì— ëŒ€í•œ ë£¨í”„
 	{
-		//ÄÚÀÎ µîÀå ½Ã°£ Áö¿¬ ½ÃÅ´
+		//ì½”ì¸ ë“±ì¥ ì‹œê°„ ì§€ì—° ì‹œí‚´
 
 		cnt++;
 		for (int i = 0; i < COIN_CNT; i++)
@@ -175,7 +185,7 @@ void GameStart()
 		if (tmp1 < 5)
 			tmp1++;
 
-		//(v2.0) Ãæµ¹Ã¼Å© Æ®¸®ÀÇ x°ª°ú °ø·æÀÇ y°ªÀ¸·Î ÆÇ´Ü
+		//(v2.0) ì¶©ëŒì²´í¬ íŠ¸ë¦¬ì˜ xê°’ê³¼ ê³µë£¡ì˜ yê°’ìœ¼ë¡œ íŒë‹¨
 		if (isCollision(treeX, boxX, dinoY)) {
 			check2 = true;
 			tmp1 = 0;
@@ -186,66 +196,66 @@ void GameStart()
 			check2 = false;
 		}
 
-		//Á¡¼ö 10Á¡ È¹µæ ÄÚÀÎÀ» ¸ÔÀ» ½Ã
+		//ì ìˆ˜ 10ì  íšë“ ì½”ì¸ì„ ë¨¹ì„ ì‹œ
 		if (isCoin(coinX, dinoY))
 			score2 += 10;
 
-		//Á¡¼ö °¨¼Ò ÄÚÀÎÀ» ¸ÔÀ» ½Ã
+		//ì ìˆ˜ ê°ì†Œ ì½”ì¸ì„ ë¨¹ì„ ì‹œ
 		for (int i = 0; i < COIN_CNT; i++)
 			if (coinCheck[i] && isCoin2(coin2X[i], dinoY))
 				score2--;
 
-		// »ı¸íÀÌ 0ÀÌ¸é °ÔÀÓ Á¾·á
+		// ìƒëª…ì´ 0ì´ë©´ ê²Œì„ ì¢…ë£Œ
 
 		if (life == 0)
 			break;
 
 
 
-		//zÅ°°¡ ´­·È°í, ¹Ù´ÚÀÏ ¶§ Á¡ÇÁ
+		//zí‚¤ê°€ ëˆŒë ¸ê³ , ë°”ë‹¥ì¼ ë•Œ ì í”„
 		if (GetKeyDown() == 'z' && isBottom)
 		{
 			isJumping = true;
 			isBottom = false;
-		}	
+		}
 
 
-		//Á¡ÇÁÁßÀÌ¶ó¸é Y¸¦ °¨¼Ò, Á¡ÇÁ°¡ ³¡³µÀ¸¸é Y¸¦ Áõ°¡.
+		//ì í”„ì¤‘ì´ë¼ë©´ Yë¥¼ ê°ì†Œ, ì í”„ê°€ ëë‚¬ìœ¼ë©´ Yë¥¼ ì¦ê°€.
 
-		if (isJumping )
+		if (isJumping)
 		{
 			dinoY -= 2 * gravity;
 		}
-		else 
+		else
 		{
 			dinoY += 2 * gravity;
 		}
 
-		//Y°¡ °è¼ÓÇØ¼­ Áõ°¡ÇÏ´Â°É ¸·±âÀ§ÇØ ¹Ù´ÚÀ» ÁöÁ¤.
+		//Yê°€ ê³„ì†í•´ì„œ ì¦ê°€í•˜ëŠ”ê±¸ ë§‰ê¸°ìœ„í•´ ë°”ë‹¥ì„ ì§€ì •.
 		if (dinoY >= DINO_BOTTOM_Y)
 		{
 			dinoY = DINO_BOTTOM_Y;
 			isBottom = true;
 		}
 
-		//³ª¹«°¡ ¿ŞÂÊÀ¸·Î (xÀ½¼ö) °¡µµ·ÏÇÏ°í
-		//³ª¹«ÀÇ À§Ä¡°¡ ¿ŞÂÊ ³¡À¸·Î°¡¸é ´Ù½Ã ¿À¸¥ÂÊ ³¡À¸·Î ¼ÒÈ¯.
+		//ë‚˜ë¬´ê°€ ì™¼ìª½ìœ¼ë¡œ (xìŒìˆ˜) ê°€ë„ë¡í•˜ê³ 
+		//ë‚˜ë¬´ì˜ ìœ„ì¹˜ê°€ ì™¼ìª½ ëìœ¼ë¡œê°€ë©´ ë‹¤ì‹œ ì˜¤ë¥¸ìª½ ëìœ¼ë¡œ ì†Œí™˜.
 		treeX -= 4;
 		if (treeX <= 0)
 		{
 			treeX = TREE_BOTTOM_X;
 		}
 
-		//¹Ú½º°¡ ¿ŞÂÊÀ¸·Î (xÀ½¼ö) °¡µµ·ÏÇÏ°í
-		//¹Ú½ºÀÇ À§Ä¡°¡ ¿ŞÂÊ ³¡À¸·Î°¡¸é ´Ù½Ã ¿À¸¥ÂÊ ³¡À¸·Î ¼ÒÈ¯.
+		//ë°•ìŠ¤ê°€ ì™¼ìª½ìœ¼ë¡œ (xìŒìˆ˜) ê°€ë„ë¡í•˜ê³ 
+		//ë°•ìŠ¤ì˜ ìœ„ì¹˜ê°€ ì™¼ìª½ ëìœ¼ë¡œê°€ë©´ ë‹¤ì‹œ ì˜¤ë¥¸ìª½ ëìœ¼ë¡œ ì†Œí™˜.
 		boxX -= 5;
 		if (boxX <= 0)
 		{
 			boxX = TREE_BOTTOM_X + 1;
 		}
-		//µ¿ÀüÀÌ ¿ŞÂÊÀ¸·Î (xÀ½¼ö) °¡µµ·ÏÇÏ°í
+		//ë™ì „ì´ ì™¼ìª½ìœ¼ë¡œ (xìŒìˆ˜) ê°€ë„ë¡í•˜ê³ 
 
-		//µ¿ÀüÀÇ À§Ä¡°¡ ¿ŞÂÊ ³¡À¸·Î°¡¸é ´Ù½Ã ¿À¸¥ÂÊ ³¡À¸·Î ¼ÒÈ¯.
+		//ë™ì „ì˜ ìœ„ì¹˜ê°€ ì™¼ìª½ ëìœ¼ë¡œê°€ë©´ ë‹¤ì‹œ ì˜¤ë¥¸ìª½ ëìœ¼ë¡œ ì†Œí™˜.
 		coinX -= 3;
 		if (coinX <= 0)
 			coinX = TREE_BOTTOM_X + 1;
@@ -257,7 +267,7 @@ void GameStart()
 					coin2X[i] = TREE_BOTTOM_X + 1;
 			}
 
-		//Á¡ÇÁ°¡ ³¡³­ »óÈ².
+		//ì í”„ê°€ ëë‚œ ìƒí™©.
 		if (dinoY <= 5 && isJumping == true)
 		{
 			isJumping = false;
@@ -272,41 +282,23 @@ void GameStart()
 		DrawBox(boxX);			//draw Box
 
 		//(v2.0)
-		curr = clock();			//ÇöÀç½Ã°£ ¹Ş¾Æ¿À±â
-		if (((curr - start) / CLOCKS_PER_SEC) >= 1)	// 1ÃÊ°¡ ³Ñ¾úÀ»‹š
+		curr = clock();			//í˜„ì¬ì‹œê°„ ë°›ì•„ì˜¤ê¸°
+		if (((curr - start) / CLOCKS_PER_SEC) >= 1)	// 1ì´ˆê°€ ë„˜ì—ˆì„Â‹Âš
 		{
-			score++;	//½ºÄÚ¾î UP
-			start = clock();	//½ÃÀÛ½Ã°£ ÃÊ±âÈ­
+			score++;	//ìŠ¤ì½”ì–´ UP
+			start = clock();	//ì‹œì‘ì‹œê°„ ì´ˆê¸°í™”
 		}
 		Sleep(60);
 		system("cls");	//clear
 
-		//(v2.0) Á¡¼öÃâ·ÂÀ» 1ÃÊ¸¶´Ù ÇØÁÖ´Â°ÍÀÌ ¾Æ´Ï¶ó Ç×»ó Ãâ·ÂÇØÁÖ¸é¼­, 1ÃÊ°¡ Áö³µÀ»¶§ ++ ÇØÁİ´Ï´Ù.
-		GotoXY(22, 0);	//Ä¿¼­¸¦ °¡¿îµ¥ À§ÂÊÀ¸·Î ¿Å±ä´Ù. ÄÜ¼ÖÃ¢ÀÌ cols=100ÀÌ´Ï±î 2*xÀÌ¹Ç·Î 22Á¤µµ ³Ö¾îÁÜ
-		printf("Score : %d\t", score + score2);	//Á¡¼ö Ãâ·ÂÇØÁÜ.
+		//(v2.0) ì ìˆ˜ì¶œë ¥ì„ 1ì´ˆë§ˆë‹¤ í•´ì£¼ëŠ”ê²ƒì´ ì•„ë‹ˆë¼ í•­ìƒ ì¶œë ¥í•´ì£¼ë©´ì„œ, 1ì´ˆê°€ ì§€ë‚¬ì„ë•Œ ++ í•´ì¤ë‹ˆë‹¤.
+		GotoXY(22, 0);	//ì»¤ì„œë¥¼ ê°€ìš´ë° ìœ„ìª½ìœ¼ë¡œ ì˜®ê¸´ë‹¤. ì½˜ì†”ì°½ì´ cols=100ì´ë‹ˆê¹Œ 2*xì´ë¯€ë¡œ 22ì •ë„ ë„£ì–´ì¤Œ
+		printf("Score : %d\t", score + score2);	//ì ìˆ˜ ì¶œë ¥í•´ì¤Œ.
 		printf("Life : %d\t", life);
 
 	}
 
-	//(v2.0) °ÔÀÓ ¿À¹ö ¸Ş´º
+	//(v2.0) ê²Œì„ ì˜¤ë²„ ë©”ë‰´
 	DrawGameOver(score + score2);
 
 }
-
-void ShowScore() {
-	system("cls");
-	int x = 18;
-	int y = 8;
-	GotoXY(x, y);
-	printf("===========================");
-	GotoXY(x, y + 1);
-	printf("ÃÖ°íÁ¡¼ö: %d\n", max_score);
-	GotoXY(x, y + 2);
-	printf("===========================");
-	GotoXY(x, y + 5);
-	printf("\n\n\n\n\n\n\n\n\n");
-	system("pause");
-	
-}
-
-//pull request test
