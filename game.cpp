@@ -265,7 +265,7 @@ void GameStart()
 			if (coinCheck[i])
 				DrawCoin2(coin2X[i]);
 		DrawTree(treeX);		//draw Tree
-		
+		DrawBox(boxX);			//draw Box
 
 		//(v2.0)
 		curr = clock();			//현재시간 받아오기
