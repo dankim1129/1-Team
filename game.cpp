@@ -92,7 +92,7 @@ void DrawGameOver(const int score)
 	printf("===========================");
 	GotoXY(x, y + 5);
 	printf("SCORE : %d", score);
-
+ 
 	printf("\n\n\n\n\n\n\n\n\n");
 	system("pause");
 }
