@@ -281,7 +281,7 @@ void GameStart()
 
 		//(v2.0) 점수출력을 1초마다 해주는것이 아니라 항상 출력해주면서, 1초가 지났을때 ++ 해줍니다.
 		GotoXY(22, 0);	//커서를 가운데 위쪽으로 옮긴다. 콘솔창이 cols=100이니까 2*x이므로 22정도 넣어줌
-		printf("Score : %d\ %dt", score, score2);	//점수 출력해줌.
+		printf("Score : %d\t", score + score2);	//점수 출력해줌.
 		printf("Life : %d\t", life);
 
 	}
