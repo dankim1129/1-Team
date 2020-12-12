@@ -69,6 +69,15 @@ void DrawTree(int treeX)
 	printf(" $$ ");
 }
 
+//박스를 그리는 함수
+void DrawBox(int boxX)
+{
+	GotoXY(boxX, BOX_BOTTOM_Y);
+	printf("$$");
+	GotoXY(boxX, BOX_BOTTOM_Y + 1);
+	printf("$$");
+}
+
 //(v2.0) 충돌 했을때 게임오버 그려줌
 void DrawGameOver(const int score)
 {
@@ -89,14 +98,20 @@ void DrawGameOver(const int score)
 }
 
 //(v2.0) 충돌했으면 true, 아니면 false
-bool isCollision(const int treeX, const int dinoY)
+bool isCollision(const int treeX, const int boxX, const int dinoY)
 {
 	//트리의 X가 공룡의 몸체쪽에 있을때,
 	//공룡의 높이가 충분하지 않다면 충돌로 처리
 	GotoXY(0, 0);
-	printf("treeX : %d, dinoY : %d", treeX, dinoY); //이런식으로 적절한 X, Y를 찾습니다.
+	printf("treeX : %d, boxX : %d, dinoY : %d", treeX, boxX, dinoY); //이런식으로 적절한 X, Y를 찾습니다.
 	if (treeX <= 8 && treeX >= 4 &&
 		dinoY > 8)
+	{
+		return true;
+	}
+
+	if (boxX <= 7 && boxX >= 5 &&
+		dinoY == 12)
 	{
 		return true;
 	}
@@ -105,7 +120,7 @@ bool isCollision(const int treeX, const int dinoY)
 
 bool isCoin(const int coinX, const int dinoY)
 {
-	if (coinX == 6 && dinoY < 8)
+	if (coinX >= 5 && coinX <= 7 && dinoY < 8)
 		return true;
 	return false;
 }
@@ -122,14 +137,12 @@ void GameStart()
 {
 	//게임 시작시 초기화
 	bool isJumping = false;
-	bool goingup = false;
-	bool goingdown = false;
-	bool isdoubleJumping = false;
 	bool isBottom = true;
 	const int gravity = 3;
 
 	int dinoY = DINO_BOTTOM_Y;
 	int treeX = TREE_BOTTOM_X;
+	int boxX = BOX_BOTTOM_X;
 	int coinX = TREE_BOTTOM_X + 1;
 	int coin2X[COIN_CNT];
 
@@ -161,7 +174,7 @@ void GameStart()
 			tmp1++;
 
 		//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
-		if (isCollision(treeX, dinoY)) {
+		if (isCollision(treeX, boxX, dinoY)) {
 			check2 = true;
 			tmp1 = 0;
 		}
@@ -171,9 +184,9 @@ void GameStart()
 			check2 = false;
 		}
 
-		//점수 획득 코인을 먹을 시
+		//점수 10점 획득 코인을 먹을 시
 		if (isCoin(coinX, dinoY))
-			score2++;
+			score2 += 10;
 
 		//점수 감소 코인을 먹을 시
 		for (int i = 0; i < COIN_CNT; i++)
@@ -191,51 +204,47 @@ void GameStart()
 		if (GetKeyDown() == 'z' && isBottom)
 		{
 			isJumping = true;
-			goingup = true;
-			goingdown = false;
 			isBottom = false;
-		}
-
-		//z키가 눌렸고, 점프 중일 때 점프
-		if (GetKeyDown() == 'z' && isJumping == true)
-		{
-			goingup = true;
-			goingdown = false;
-			isdoubleJumping = true;
-			isJumping = false;
-		}
+		}	
 
 
 		//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
 
-		if (goingup)
+		if (isJumping )
 		{
-			dinoY -= gravity;
+			dinoY -= 2 * gravity;
 		}
-		else if (goingdown)
+		else 
 		{
-			dinoY += gravity;
+			dinoY += 2 * gravity;
 		}
 
 		//Y가 계속해서 증가하는걸 막기위해 바닥을 지정.
 		if (dinoY >= DINO_BOTTOM_Y)
 		{
 			dinoY = DINO_BOTTOM_Y;
-			goingdown = false;
 			isBottom = true;
 		}
 
 		//나무가 왼쪽으로 (x음수) 가도록하고
 		//나무의 위치가 왼쪽 끝으로가면 다시 오른쪽 끝으로 소환.
-		treeX -= 2;
+		treeX -= 4;
 		if (treeX <= 0)
 		{
 			treeX = TREE_BOTTOM_X;
 		}
+
+		//박스가 왼쪽으로 (x음수) 가도록하고
+		//박스의 위치가 왼쪽 끝으로가면 다시 오른쪽 끝으로 소환.
+		boxX -= 5;
+		if (boxX <= 0)
+		{
+			boxX = TREE_BOTTOM_X + 1;
+		}
 		//동전이 왼쪽으로 (x음수) 가도록하고
 
 		//동전의 위치가 왼쪽 끝으로가면 다시 오른쪽 끝으로 소환.
-		coinX -= 2;
+		coinX -= 3;
 		if (coinX <= 0)
 			coinX = TREE_BOTTOM_X + 1;
 
@@ -246,18 +255,10 @@ void GameStart()
 					coin2X[i] = TREE_BOTTOM_X + 1;
 			}
 
-		//점프의 한번으로 점프가 끝난 상황.
-		if (dinoY <= 3 && isdoubleJumping == true)
+		//점프가 끝난 상황.
+		if (dinoY <= 5 && isJumping == true)
 		{
-			goingup = false;
-			goingdown = true;
-		}
-
-		//점프의 두번으로 점프가 끝난 상황.
-		if (dinoY <= 8 && isJumping == true)
-		{
-			goingup = false;
-			goingdown = true;
+			isJumping = false;
 		}
 
 		DrawDino(dinoY);		//draw dino
@@ -266,6 +267,7 @@ void GameStart()
 			if (coinCheck[i])
 				DrawCoin2(coin2X[i]);
 		DrawTree(treeX);		//draw Tree
+		DrawBox(boxX);			//draw Box
 
 		//(v2.0)
 		curr = clock();			//현재시간 받아오기
@@ -279,7 +281,7 @@ void GameStart()
 
 		//(v2.0) 점수출력을 1초마다 해주는것이 아니라 항상 출력해주면서, 1초가 지났을때 ++ 해줍니다.
 		GotoXY(22, 0);	//커서를 가운데 위쪽으로 옮긴다. 콘솔창이 cols=100이니까 2*x이므로 22정도 넣어줌
-		printf("Score : %d\t", score + score2);	//점수 출력해줌.
+		printf("Score : %d\ %dt", score, score2);	//점수 출력해줌.
 		printf("Life : %d\t", life);
 
 	}
