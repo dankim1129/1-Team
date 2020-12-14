@@ -19,9 +19,6 @@ highscore::highscore(char* name_, int score_) {
 //map 사용으로 rankdata에 정보를 불러와 현재 순위 나열
 map<int, string, greater<int>> rankdata;
 
-static char buf[1001];
-
-
 void ScorePrint() {
 
     system("cls");
